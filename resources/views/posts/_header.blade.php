@@ -6,19 +6,7 @@
             <div class="space-y-2 lg:space-y-0 lg:space-x-4 mt-4">
                 <!--  Category -->
                 <div class="relative flex lg:inline-flex items-center bg-gray-100 rounded-xl">
-                    <select id='selectedDropdown' class="flex-1 appearance-none bg-transparent py-2 pl-3 pr-9 text-sm font-semibold overflow-auto max-h-52">
-                        <option value="category" disabled selected>{{isset($currentCategory) ? ucwords($currentCategory->name) : 'Category'}}
-                        </option>
-                         <option value="/" class="{{request()->routeIs('home') ? 'bg-blue-500 text-white' : ''}}">All</option>
-                        @foreach($categories as $category)
-                        <option value="/categories/{{$category->slug}}" 
-                        class="{{isset($currentCategory) && $currentCategory->id === $category->id ? 'bg-blue-500 text-white' : ''}}">
-                        {{$category->name}}</option>
-                        
-                        @endforeach
-                    </select>
-
-                    <x-icon name="dropdown" class="absolute pointer-events-none"/>
+                    <x-category-dropdown :categories="$categories"/> 
                 </div>
 
                 <!-- Other Filters -->
@@ -45,7 +33,10 @@
 
                 <!-- Search -->
                 <div class="relative flex lg:inline-flex items-center bg-gray-100 rounded-xl px-3 py-2">
-                    <form method="GET" action="#">
+                    <form method="GET" action="/">
+                        @if(request('category'))
+                        <input type="hidden" name='category' value="{{request('category')}}">
+                        @endif
                         <input type="text" name="search" placeholder="Find something"   
                         class="bg-transparent placeholder-black font-semibold text-sm"
                         value="{{request('search')}}">

@@ -16,15 +16,14 @@ class PostController extends Controller
     public function index()
     {
         //
-          $posts =  Post::latest()->with('category','author');
-    $categories = Category::all();
+        
+          $posts =  Post::latest()->filter(request(['search','category','author']))->paginate(6)->withQueryString();
+          $categories = Category::all();
+          $currentCategory=Category::where('slug',request('category'))->first();
     
-    if(request('search')){
-        $posts->where('title','like','%'.request('search').'%')
-        ->orWhere('body','like','%' .request('search'). '%');
-    }
    
-    return view('posts.posts')->with(['posts'=> $posts->get(),'categories'=> $categories]);
+   
+    return view('posts.index')->with(['posts'=> $posts,'categories'=> $categories,'currentCategory'=>$currentCategory]);
     }
 
     /**
@@ -57,7 +56,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         //
-         return view('posts.post',[
+         return view('posts.show',[
         'post'=>$post
     ]);
     }

@@ -19,9 +19,19 @@
                 </a>
             </div>
 
-            <div class="mt-8 md:mt-0">
-                <a href="/" class="text-xs font-bold uppercase">Home Page</a>
+            <div class="mt-8 md:mt-0 flex items-center">
+                @auth
+                <span class="text-xs font-bold uppercase">Welcome, {{auth()->user()->name}} !</span>
 
+                <form action="/logout" method="post" class='text-sm font-semibold ml-4 text-blue-500'>
+                    @csrf 
+
+                     <button type="submit">Log Out</button>
+                </form>
+                @else
+                <a href="/register" class="text-xs font-bold uppercase">Register</a>
+                <a href="/login" class="ml-4 text-blue-500 text-xs font-bold uppercase">Log in</a>
+                @endauth
                 <a href="#" class="btn">
                     Subscribe for Updates
                 </a>
@@ -57,4 +67,31 @@
             </div>
         </footer>
     </section>
+
+    @if(session()->has('success'))
+<div id='flashMessage' class='fixed bottom-3 right-3  text-sm bg-blue-500 text-white px-4 py-2 border border-gray-50 rounded'>
+    <p>{{session('success')}}</p>
+</div>
+    @endif
 </body>
+
+<script>
+   
+    let toast = document.getElementById('flashMessage');
+    @if (Session::has('success')) 
+    toast.className = 'show' + 'fixed bottom-3 right-3  text-sm bg-blue-500 text-white px-4 py-2 border border-gray-50 rounded'
+    Session::get('success');
+    setTimeout(()=>{
+        toast.className = x.className.replace('show','');
+    },1000);
+    @endif
+        
+    
+
+    toast.className='show' + 'fixed bottom-3 right-3  text-sm bg-blue-500 text-white px-4 py-2 border border-gray-50 rounded';
+    //after 3 seconds , remove the show class from div
+    setTimeout(()=>{
+        toast.className = toast.className.replace('show','');
+    },1000);
+</script>
+

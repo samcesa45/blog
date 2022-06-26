@@ -23,9 +23,11 @@ class PostFactory extends Factory
             'user_id'=>$user,
             'category_id'=>$category,
             'title'=>$this->faker->sentence,
+            'image_path'=>$this->faker->image('public/images/',400,300,null,false),
             'slug'=>$this->faker->slug,
             'excerpt'=>$this->faker->sentence,
             'body'=>$this->faker->paragraph,
+
         ];
     }
 }

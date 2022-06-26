@@ -6,14 +6,14 @@
         <main class="max-w-6xl mx-auto mt-10 lg:mt-20 space-y-6">
             <article class="max-w-4xl mx-auto lg:grid lg:grid-cols-12 gap-x-10">
                 <div class="col-span-4 lg:text-center lg:pt-14 mb-10">
-                    <img src="/images/illustration-1.png" alt="" class="rounded-xl">
+                    <img src="{{asset('images/' . $post->image_path)}}" alt="" class="rounded-xl">
 
                     <p class="mt-4 block text-gray-400 text-xs">
                         Published <time>{{$post->created_at->diffForHumans()}}</time>
                     </p>
 
                     <div class="flex items-center lg:justify-center text-sm mt-4">
-                        <img src="/images/lary-avatar.svg" alt="Lary avatar">
+                        <img src="{{asset('images/' . $post->image_path)}}" alt="Lary avatar">
                         <div class="ml-3 text-left">
                             <h5 class="font-bold">
                             <a href="?author={{$post->author->username}}">{{$post->author->name}}</a> 
@@ -56,7 +56,34 @@
                 </div>
 
                 <!-- comment section -->
-                <section class="col-span-8 col-start-5 mt-10">
+                <section class="col-span-8 col-start-5 mt-10 space-y-6">
+                    @auth
+                    <x-panel>
+                    <form method="POST" action="/posts/{{$post->slug}}/comments">
+                        @csrf
+                        @method('POST')
+                        <header class="flex items-center">
+                             <div class='flex-shrink-0'>
+                            <img class=' rounded-full'  src="https://i.pravatar.cc/40?u{{Auth::id()}}" alt="avatar" width="40" height="40" >
+                        </div>
+                            <h2 class="ml-4">want to participate</h2>
+                        </header>
+                        <div class="mt-4">
+                            <textarea class="w-full p-2  rounded-md focus:outline-none focus:ring" name="body" id="body" cols="30" rows="10" placeholder="write comment here..."></textarea>
+                        @error('body')
+                          <span class="text-xs text-red-500">{{$message}}</span>
+                        @enderror
+                        </div>
+                        <div class="mt-4 text-right">
+                           <button type="submit" class="px-4 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:text-gray-100 disabled:bg-gray-300 disabled:cursor-not-allowed" id='button'>Post</button> 
+                        </div>
+                    </form>
+                    </x-panel>
+                    @else
+                    <p class='font-semibold'>
+                        <a href="/register" class="hover:underline hover:text-blue-500">Register</a> or <a href="/login" class="hover:underline hover:text-blue-500">Log in</a> to leave a comment
+                    </p>
+                    @endauth
                     @foreach($post->comments()->get() as $comment)
                    <x-post-comment :comment="$comment"/> 
                    @endforeach
@@ -66,4 +93,19 @@
     </section>
 
 </x-app>
+
+<script>
+    let textareaInput = document.querySelector('#body')
+    let button = document.querySelector('#button')
+    button.disabled = true 
+    textareaInput.addEventListener('click',validate);
+    function validate(){
+        if(textareaInput.value !== ''){
+            button.disabled = false;
+        }
+        else{
+            button.disabled = true;
+        }
+    }
+</script>
 

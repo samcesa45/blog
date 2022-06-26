@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Category;
+use Illuminate\Validation\Rule;
+
 
 class PostController extends Controller
 {
@@ -34,6 +36,8 @@ class PostController extends Controller
     public function create()
     {
         //
+        
+        return view('posts.create');
     }
 
     /**
@@ -45,6 +49,35 @@ class PostController extends Controller
     public function store(Request $request)
     {
         //
+        
+           $request->validate([
+                    'title'=>'required',
+                    'image' =>'required|mimes:jpg,png,jpeg|max:5048',
+                    'slug' => ['required',Rule::unique('posts','slug')],
+                    'excerpt'=>'required',
+                    'body'=>'required',
+                    'category_id'=>['required',Rule::exists('categories','id')]
+                ]);
+
+    //   $path = $request->file('thumbnail')->store('thumbnails');
+       $path = time() . '-' . $request->name . '.' .
+        $request->image->extension();
+
+       $request->image->move(public_path('images'),$path);
+    
+        Post::create([
+                'user_id'=>auth()->user()->id,
+                'title'=>$request->input('title'),
+                'slug'=>$request->input('slug'),
+                'excerpt'=>$request->input('excerpt'),
+                'body'=>$request->input('body'),
+                'category_id'=>$request->input('category_id'),
+                'image_path'=>$path,
+            ]);
+        
+       
+       return redirect('/');
+       
     }
 
     /**
